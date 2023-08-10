@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <p class="out"></p>
+    <script>
+      const out = document.querySelector('.out')
+
+      function send(prompt) {
+        const url = new URL('/chat', location.href)
+        url.searchParams.set('prompt', prompt)
+
+        out.innerHTML = ''
+        const es = new EventSource(url)
+        es.onmessage = (e) => {
+          if (e.data === '[DONE]') {
+            return es.close()
+          }
+          const data = JSON.parse(e.data)
+          const { content = '' } = data.choices[0].delta
+          console.log('🚀 ~ file: index.html:16 ~ send ~ e:', content)
+
+          out.innerHTML += content
+        }
+      }
+      send('你好')
+    </script>
+  </body>
+</html>
